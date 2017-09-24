@@ -1,6 +1,8 @@
 from flask import Flask, redirect, render_template, request, url_for
 
 import helpers
+import os
+import sys
 from analyzer import Analyzer
 
 app = Flask(__name__)
@@ -18,10 +20,22 @@ def search():
         return redirect(url_for("index"))
 
     # get screen_name's tweets
-    tweets = helpers.get_user_timeline(screen_name)
-
-    # TODO
-    positive, negative, neutral = 0.0, 0.0, 100.0
+    tweets = helpers.get_user_timeline(screen_name, count=100)
+    
+    positives = os.path.join(sys.path[0], "positive-words.txt")
+    negatives = os.path.join(sys.path[0], "negative-words.txt")
+    anz = Analyzer(positives, negatives)
+    
+    po = ne = nu = 0
+    for tweet in tweets:
+        if anz.analyze(tweet) > 0:
+            po += 1
+        elif anz.analyze(tweet) < 0:
+            ne += 1
+        else:
+            nu += 1
+    
+    positive, negative, neutral = po/len(tweets)*100,ne/len(tweets)*100,nu/len(tweets)*100
 
     # generate chart
     chart = helpers.chart(positive, negative, neutral)

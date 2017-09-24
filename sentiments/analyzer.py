@@ -32,5 +32,4 @@ class Analyzer():
         for word in tokens:
             if word in self.posw: score+=1
             if word in self.negw: score-=1
-        print(score)
         return score
