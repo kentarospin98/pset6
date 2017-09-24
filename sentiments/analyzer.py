@@ -27,6 +27,10 @@ class Analyzer():
 
     def analyze(self, text):
         """Analyze text for sentiment, returning its score."""
-        print(self.posw.issuperset({text}))
-        print(self.negw.issuperset({text}))
-        return 0
+        score = 0
+        tokens = nltk.word_tokenize(text)
+        for word in tokens:
+            if word in self.posw: score+=1
+            if word in self.negw: score-=1
+        print(score)
+        return score
